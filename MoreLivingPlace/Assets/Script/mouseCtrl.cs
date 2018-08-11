@@ -12,7 +12,7 @@ public class mouseCtrl : MonoBehaviour {
 	// Use this for initialization
 	void Awake () {
         targetTracer = transform.Find("targetTracer");
-        cageScript = GameObject.Find("cage").GetComponent<cageCtrl>();
+        cageScript = GameObject.Find("Cage").GetComponent<cageCtrl>();
 	}
 	
 	// Update is called once per frame
@@ -26,10 +26,6 @@ public class mouseCtrl : MonoBehaviour {
                 Debug.Log(hit.point);
                 Debug.DrawRay(hit.point, transform.up * 100, Color.green);
             }
-        }
-        if (Input.GetMouseButtonDown(0))
-        {
-            cageScript.Pushing();
         }
     }
 }

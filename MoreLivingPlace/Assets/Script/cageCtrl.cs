@@ -15,7 +15,10 @@ public class cageCtrl : MonoBehaviour {
     private Vector3 targetPos;
 
     public float curGroundSize, curWallLength, curWallThick = 0.5f, pushPower = 1f;
-    private float curStress = 0;    //should be 0-1
+    private float curStress = 2f;
+
+    private humanSpawning humanSpawnScript;
+    public float humanSpawnInterval = 1f;
 
 	// Use this for initialization
 	void Awake () {
@@ -39,29 +42,24 @@ public class cageCtrl : MonoBehaviour {
         curGroundSize = (int)ground.transform.localScale.x;
         curWallLength = curGroundSize/2 - curWallThick;
         SetUpTarget(new Vector3(0,0,0));
+        humanSpawnScript = GetComponent<humanSpawning>();
+        StartCoroutine("humanSpawningLoop");
     }
 	
 	// Update is called once per frame
-	void Update () {
+	void Update ()
+    {
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            Pushing();
+        }
+        PushingBack();
         WallMovement();
-        WallPushBack();
     }
 
     void WallMovement()
     {
         if (Vector3.Distance(wallUp.localPosition,wallUpPos) > wallMovingSmooth)
-            wallUp.localPosition = Vector3.SmoothDamp(wallUp.localPosition, wallUpPos, ref smoothWallUpMove, wallMoveingSmoothDamp);
-        if (Vector3.Distance(wallDown.localPosition, wallDownPos) > wallMovingSmooth)
-            wallDown.localPosition = Vector3.SmoothDamp(wallDown.localPosition, wallDownPos, ref smoothWallDownMove, wallMoveingSmoothDamp);
-        if (Vector3.Distance(wallRight.localPosition, wallRightPos) > wallMovingSmooth)
-            wallRight.localPosition = Vector3.SmoothDamp(wallRight.localPosition, wallRightPos, ref smoothWallRightMove, wallMoveingSmoothDamp);
-        if (Vector3.Distance(wallLeft.localPosition, wallLeftPos) > wallMovingSmooth)
-            wallLeft.localPosition = Vector3.SmoothDamp(wallLeft.localPosition, wallLeftPos, ref smoothWallLeftMove, wallMoveingSmoothDamp);
-    }
-
-    void WallPushBack()
-    {
-        if (Vector3.Distance(wallUp.localPosition, wallUpStartPos) > wallMovingSmooth)
             wallUp.localPosition = Vector3.SmoothDamp(wallUp.localPosition, wallUpPos, ref smoothWallUpMove, wallMoveingSmoothDamp);
         if (Vector3.Distance(wallDown.localPosition, wallDownPos) > wallMovingSmooth)
             wallDown.localPosition = Vector3.SmoothDamp(wallDown.localPosition, wallDownPos, ref smoothWallDownMove, wallMoveingSmoothDamp);
@@ -81,48 +79,48 @@ public class cageCtrl : MonoBehaviour {
             wallLeftPos = wallLeft.localPosition;
             
             if ((wallUpPos.x + curWallThick) > (targetPos.x + curWallThick*3))
-                wallUpPos.x = Mathf.Max(wallUpPos.x - pushPower * (1 - curStress), (targetPos.x + curWallThick * 3 - curWallThick));
+                wallUpPos.x = Mathf.Max(wallUpPos.x - pushPower, (targetPos.x + curWallThick * 3 - curWallThick));
             if (wallUpPos.z > (targetPos.z + curWallThick*3))
-                wallUpPos.z = Mathf.Max(wallUpPos.z - pushPower * (1 - curStress), (targetPos.z + curWallThick * 3));
+                wallUpPos.z = Mathf.Max(wallUpPos.z - pushPower, (targetPos.z + curWallThick * 3));
 
             if ((wallDownPos.x - curWallThick) < (targetPos.x - curWallThick*3))
-                wallDownPos.x = Mathf.Min(wallDownPos.x + pushPower * (1 - curStress), (targetPos.x - curWallThick * 3 + curWallThick));
+                wallDownPos.x = Mathf.Min(wallDownPos.x + pushPower, (targetPos.x - curWallThick * 3 + curWallThick));
             if (wallDownPos.z < (targetPos.z - curWallThick * 3))
-                wallDownPos.z = Mathf.Min(wallDownPos.z + pushPower * (1 - curStress), (targetPos.z - curWallThick * 3));
+                wallDownPos.z = Mathf.Min(wallDownPos.z + pushPower, (targetPos.z - curWallThick * 3));
 
             if (wallRightPos.x > (targetPos.x + curWallThick * 3))
-                wallRightPos.x = Mathf.Max(wallRightPos.x - pushPower * (1 - curStress), (targetPos.x + curWallThick * 3));
+                wallRightPos.x = Mathf.Max(wallRightPos.x - pushPower, (targetPos.x + curWallThick * 3));
             if ((wallRightPos.z - curWallThick) < (targetPos.z - curWallThick * 3))
-                wallRightPos.z = Mathf.Min(wallRightPos.z + pushPower * (1 - curStress), (targetPos.z - curWallThick * 3 + curWallThick));
+                wallRightPos.z = Mathf.Min(wallRightPos.z + pushPower, (targetPos.z - curWallThick * 3 + curWallThick));
 
             if (wallLeftPos.x < (targetPos.x - curWallThick * 3))
-                wallLeftPos.x = Mathf.Min(wallLeftPos.x + pushPower * (1 - curStress), (targetPos.x - curWallThick * 3));
+                wallLeftPos.x = Mathf.Min(wallLeftPos.x + pushPower, (targetPos.x - curWallThick * 3));
             if ((wallLeftPos.z + curWallThick) > (targetPos.z + curWallThick * 3))
-                wallLeftPos.z = Mathf.Max(wallLeftPos.z - pushPower * (1 - curStress), (targetPos.z + curWallThick * 3 - curWallThick));
+                wallLeftPos.z = Mathf.Max(wallLeftPos.z - pushPower, (targetPos.z + curWallThick * 3 - curWallThick));
         }
     }
 
     public void PushingBack()
     {
         if (wallUpPos.x < wallUpStartPos.x)
-            wallUpPos.x = Mathf.Min(wallUpPos.x - pushPower * (1 - curStress), wallUpStartPos.x);
+            wallUpPos.x = Mathf.Min(wallUpPos.x + (pushPower * curStress) * Time.deltaTime, wallUpStartPos.x);
         if (wallUpPos.z < wallUpStartPos.z)
-            wallUpPos.z = Mathf.Max(wallUpPos.z - pushPower * (1 - curStress), (targetPos.z + curWallThick * 3));
+            wallUpPos.z = Mathf.Min(wallUpPos.z + (pushPower * curStress) * Time.deltaTime, wallUpStartPos.z);
 
-        if ((wallDownPos.x - curWallThick) < (targetPos.x - curWallThick * 3))
-            wallDownPos.x = Mathf.Min(wallDownPos.x + pushPower * (1 - curStress), (targetPos.x - curWallThick * 3 + curWallThick));
-        if (wallDownPos.z < (targetPos.z - curWallThick * 3))
-            wallDownPos.z = Mathf.Min(wallDownPos.z + pushPower * (1 - curStress), (targetPos.z - curWallThick * 3));
+        if (wallDownPos.x > wallDownStartPos.x)
+            wallDownPos.x = Mathf.Max(wallDownPos.x - (pushPower * curStress) * Time.deltaTime, wallDownStartPos.x);
+        if (wallDownPos.z > wallDownStartPos.z)
+            wallDownPos.z = Mathf.Max(wallDownPos.z - (pushPower * curStress) * Time.deltaTime, wallDownStartPos.z);
 
-        if (wallRightPos.x > (targetPos.x + curWallThick * 3))
-            wallRightPos.x = Mathf.Max(wallRightPos.x - pushPower * (1 - curStress), (targetPos.x + curWallThick * 3));
-        if ((wallRightPos.z - curWallThick) < (targetPos.z - curWallThick * 3))
-            wallRightPos.z = Mathf.Min(wallRightPos.z + pushPower * (1 - curStress), (targetPos.z - curWallThick * 3 + curWallThick));
+        if (wallRightPos.x < wallRightStartPos.x)
+            wallRightPos.x = Mathf.Min(wallRightPos.x + (pushPower * curStress) * Time.deltaTime, wallRightStartPos.x);
+        if (wallRightPos.z > wallRightStartPos.z)
+            wallRightPos.z = Mathf.Max(wallRightPos.z - (pushPower * curStress) * Time.deltaTime, wallRightStartPos.z);
 
-        if (wallLeftPos.x < (targetPos.x - curWallThick * 3))
-            wallLeftPos.x = Mathf.Min(wallLeftPos.x + pushPower * (1 - curStress), (targetPos.x - curWallThick * 3));
-        if ((wallLeftPos.z + curWallThick) > (targetPos.z + curWallThick * 3))
-            wallLeftPos.z = Mathf.Max(wallLeftPos.z - pushPower * (1 - curStress), (targetPos.z + curWallThick * 3 - curWallThick));
+        if (wallLeftPos.x > wallLeftStartPos.x)
+            wallLeftPos.x = Mathf.Max(wallLeftPos.x - (pushPower * curStress) * Time.deltaTime, wallLeftStartPos.x);
+        if (wallLeftPos.z < wallLeftStartPos.z)
+            wallLeftPos.z = Mathf.Min(wallLeftPos.z + (pushPower * curStress) * Time.deltaTime, wallLeftStartPos.z);
     }
 
     //public void Pushing()
@@ -196,5 +194,15 @@ public class cageCtrl : MonoBehaviour {
     public static void Dismiss()
     {
         curHumanCount--;
+    }
+
+    IEnumerator humanSpawningLoop()
+    {
+        yield return new WaitForSeconds(1f);
+        while (true)
+        {
+            humanSpawnScript.HumanSpawn();
+            yield return new WaitForSeconds(humanSpawnInterval);
+        }
     }
 }
