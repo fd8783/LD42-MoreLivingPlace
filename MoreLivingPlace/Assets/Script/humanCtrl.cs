@@ -104,7 +104,7 @@ public class humanCtrl : MonoBehaviour {
         handsRot.z = 180f;
         armCtrl.localEulerAngles = handsRot;
         Vector3 loadedPos = shooter.position;
-        loadedPos.y += height;
+        //loadedPos.y += height;
         transform.position = loadedPos;
         transform.parent = shooter;
         cageCtrl.Dismiss(volume);
@@ -127,18 +127,23 @@ public class humanCtrl : MonoBehaviour {
                 {
                     col.transform.GetComponent<humanCtrl>().Death();
                 }
+                screenShake.shakecoefficient = 0.1f + Mathf.Log10(curFallSpeed);
+                screenShake.StopScreen(0.03f);
                 isDeath = true;
                 Instantiate(bloodParticle, bloodParticlePos.position, bloodParticlePos.rotation);
                 GameObject.Find("Second Camera").GetComponent<followAst>().Dismiss();
                 GameObject.Find("MouseCtrl").GetComponent<mouseCtrl>().RestartAimming();
+
                 BackgroundSetting.SetCurHeight(0);
+                BackgroundSetting.CheckStep();
+
                 Destroy(gameObject);
                 return;
             }
         }
         else
         {
-            Debug.Log(Mathf.Max(Mathf.RoundToInt(transform.position.y - height), 0));
+            //Debug.Log(Mathf.Max(Mathf.RoundToInt(transform.position.y - height), 0));
             BackgroundSetting.SetCurHeight(Mathf.Max(Mathf.RoundToInt(transform.position.y - height), 0));
         }
     }

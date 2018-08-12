@@ -5,8 +5,8 @@ using UnityEngine;
 public class mouseCtrl : MonoBehaviour {
 
     public LayerMask groundLayer;
-    private Transform targetTracer;
-    private Projector aimProjector;
+    private GameObject targetTracer;
+    //private Projector aimProjector;
 
     private cageCtrl cageScript;
     private Transform shooterPool;
@@ -16,9 +16,10 @@ public class mouseCtrl : MonoBehaviour {
     
 	// Use this for initialization
 	void Awake () {
-        targetTracer = transform.Find("targetTracer");
-        aimProjector = targetTracer.GetComponent<Projector>();
-        aimProjector.enabled = false;
+        targetTracer = transform.Find("targetTracer").gameObject;
+        targetTracer.SetActive(false);
+        //aimProjector = targetTracer.GetComponent<Projector>();
+        //aimProjector.enabled = false;
         cageScript = GameObject.Find("Cage").GetComponent<cageCtrl>();
         shooter = Resources.Load<Transform>("shooter");
 	}
@@ -36,7 +37,8 @@ public class mouseCtrl : MonoBehaviour {
                 {
                     //Debug.Log(hit.point);
                     //Debug.DrawRay(hit.point, transform.up * 100, Color.green);
-                    aimProjector.enabled = true;
+                    //aimProjector.enabled = true;
+                    targetTracer.SetActive(true);
 
                     if (Input.GetMouseButtonDown(0))
                     {
@@ -53,7 +55,8 @@ public class mouseCtrl : MonoBehaviour {
                 }
                 else
                 {
-                    aimProjector.enabled = false;
+                    targetTracer.SetActive(false);
+                    //aimProjector.enabled = false;
                 }
             }
         }

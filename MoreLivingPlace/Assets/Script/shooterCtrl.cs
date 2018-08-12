@@ -8,6 +8,7 @@ public class shooterCtrl : MonoBehaviour {
     public Transform destroyParticle;
     private Transform destroyParticlePos;
     public float smashRange = 1.2f, volume = 1f;
+    private int curFuelTankCount = 0;
 
     private Vector3 targetPos, curPos;
     private bool reachTarget = true, loaded = false;
@@ -54,11 +55,13 @@ public class shooterCtrl : MonoBehaviour {
 
     void Reach()
     {
+        screenShake.shakecoefficient = 0.5f;
+        screenShake.StopScreen(0.05f);
         reachTarget = true;
         landingParticle.Play();
         Smash();
         cageCtrl.Register(volume*transform.localScale.x);
-        Debug.Log("pushing");
+        //Debug.Log("pushing");
         if (loaded)
         {
             cageCtrl.SetUpTarget(transform);
@@ -71,38 +74,83 @@ public class shooterCtrl : MonoBehaviour {
 
     void Smash()
     {
+        int normalCount = 0;
+        float curHeight = 0, curTargetHeight;
+        Vector3 tempPos;
+        List<int> fuelIndexs = new List<int>();
         Collider[] smashTargets = Physics.OverlapSphere(transform.position, transform.localScale.x * smashRange, smashTargetLayer);
         if (smashTargets.Length > 0)
         {
             float closestDis = float.MaxValue, curDis, closetIndex = -1;
             for (int i = 0; i < smashTargets.Length; i++)
             {
-                curDis = Vector3.Distance(transform.position, smashTargets[i].transform.position);
-                if (curDis < closestDis)
+                if (smashTargets[i].tag == "FuelTankHuman")
                 {
-                    closetIndex = i;
-                    closestDis = curDis;
-                }
-            }
-            for (int j = 0; j < smashTargets.Length; j++)
-            {
-                if (closetIndex == j)
-                {
-                    loadedHuman = smashTargets[j].transform;
-                    loadedHuman.GetComponent<humanCtrl>().Loaded(transform);
-                    loaded = true;
+                    fuelIndexs.Add(i);
                 }
                 else
                 {
-                    smashTargets[j].GetComponent<humanCtrl>().Death();
+                    normalCount++;
+                    curDis = Vector3.Distance(transform.position, smashTargets[i].transform.position);
+                    if (curDis < closestDis)
+                    {
+                        closetIndex = i;
+                        closestDis = curDis;
+                    }
                 }
             }
+            curFuelTankCount = fuelIndexs.Count;
+            if (normalCount > 0)
+            {
+                for (int j = 0; j < smashTargets.Length; j++)
+                {
+                    if (fuelIndexs.Contains(j)) continue;
+                    if (closetIndex == j)
+                    {
+                        loadedHuman = smashTargets[j].transform;
+                        loaded = true;
+                    }
+                    else
+                    {
+                        smashTargets[j].GetComponent<humanCtrl>().Death();
+                    }
+                }
+            }
+            else
+            {
+                loadedHuman = smashTargets[fuelIndexs[0]].transform;
+                loaded = true;
+                fuelIndexs.RemoveAt(0);
+            }
+            curTargetHeight = loadedHuman.GetComponent<humanCtrl>().height;
+            curHeight += curTargetHeight;
+
+            if (fuelIndexs.Count > 0)
+            {
+                foreach (int index in fuelIndexs)
+                {
+                    smashTargets[index].GetComponent<humanCtrl>().Loaded(loadedHuman);
+                    smashTargets[index].GetComponent<humanCtrl>().enabled = false;
+                    tempPos = smashTargets[index].transform.position;
+                    curHeight += 2.25f * 0.6f;
+                    tempPos.y -= curHeight;
+                    smashTargets[index].transform.position = tempPos;
+                    curHeight += 2.25f;
+                }
+            }
+            loadedHuman.GetComponent<humanCtrl>().Loaded(transform);
+            tempPos = loadedHuman.position;
+            tempPos.y += curHeight;
+            loadedHuman.position = tempPos;
         }
     }
 
     public void Fire(float power)
     {
-        loadedHuman.GetComponent<humanCtrl>().Fire(power);
+        screenShake.ShakeScreen(1f);
+        Debug.Log("checkPower: " + power);
+        loadedHuman.GetComponent<humanCtrl>().Fire(power* Mathf.Pow(BackgroundSetting.fuelTankPower, curFuelTankCount));
+        Debug.Log("before fuelTank: " + power + " After fuelTank*" + curFuelTankCount + ": " + power * Mathf.Pow(BackgroundSetting.fuelTankPower, curFuelTankCount));
         loadedHuman.parent = null;
         SelfDestroy();
     }

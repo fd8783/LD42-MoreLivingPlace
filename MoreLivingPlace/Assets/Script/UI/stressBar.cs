@@ -22,7 +22,7 @@ public class stressBar : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-        curShowingStressLevel = Mathf.Min(cageCtrl.stressLevel / 1.5f, 1f);
+        curShowingStressLevel = Mathf.Min(cageCtrl.stressLevel / 1.45f, 1f);
         barImg.fillAmount = curShowingStressLevel;
         curIndicatorPos = indicator.anchoredPosition;
         curIndicatorPos.y = minIndicatorMoving + (curShowingStressLevel * indicatorMovingRange);

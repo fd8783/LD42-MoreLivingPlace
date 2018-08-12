@@ -7,10 +7,11 @@ public class cageCtrl : MonoBehaviour {
     public static float curMaxVolume, curVolume = 0, stressLevel;
     public static bool ableToSpawn = true;
     public static bool readyToPush = false;
+    public bool ableToAddThin = false, ableToAddFuelTank = false;
     private static Vector3 targetPos;
     private static Transform curShooter = null;
 
-    public float preStress = 0, lastPushTime, releaseFireTime = 0.3f;
+    public float preStress = 0, lastPushTime, releaseFireTime = 0.2f;
     private bool readyToFire = false, pushedThisFrame =false;
     private mouseCtrl mouseScript;
 
@@ -32,9 +33,9 @@ public class cageCtrl : MonoBehaviour {
     public Material[] skin, clothing, shoe;
     private int skinCount, clothingCount, shoeCount;
 
-    private Transform normalHuamn;
+    private Transform normalHuamn, thinHuman, fuelTankHuman;
     //private humanSpawning humanSpawnScript;
-    public float humanSpawnInterval = 0.5f;
+    public float humanSpawnInterval = 0.3f;
 
 	// Use this for initialization
 	void Awake () {
@@ -60,13 +61,14 @@ public class cageCtrl : MonoBehaviour {
         //SetUpTarget(new Vector3(0,0,0));
         mouseScript = GameObject.Find("MouseCtrl").GetComponent<mouseCtrl>();
         normalHuamn = Resources.Load<Transform>("Human/NormalHuman");
+        thinHuman = Resources.Load<Transform>("Human/ThinHuman");
+        fuelTankHuman = Resources.Load<Transform>("Human/FuelTankHuman");
         skinCount = skin.Length;
         clothingCount = clothing.Length;
         shoeCount = shoe.Length;
         spawnPos.y = wallUp.localPosition.y + 3f;
         //humanSpawnScript = GetComponent<humanSpawning>();
         StartCoroutine("humanSpawningLoop");
-        //ScaleGroundSize(0.666f);
     }
 	
 	// Update is called once per frame
@@ -85,8 +87,11 @@ public class cageCtrl : MonoBehaviour {
                 if (Time.time > lastPushTime + releaseFireTime)
                 {
                     //mouseScript.Fired();
-                    curShooter.GetComponent<shooterCtrl>().Fire(Mathf.Pow(curVolume, preStress));
-                    Debug.Log("fire power: " + Mathf.Pow(curVolume, preStress) + " c&p" + curVolume + ":" + preStress);
+                    Debug.Log("fire power: " + Mathf.Pow(curVolume, preStress * 0.9f) + " c&p" + curVolume + ":" + preStress * 0.9f);
+                    curShooter.GetComponent<shooterCtrl>().Fire(Mathf.Pow(curVolume, preStress*0.9f));
+                    screenShake.shakecoefficient = 1f * preStress;
+                    screenShake.StopScreen(0.07f);
+                    Debug.Log("fire power: " + Mathf.Pow(curVolume, preStress * 0.9f) + " c&p" + curVolume + ":" + preStress * 0.9f);
                     //curShooter.GetComponent<shooterCtrl>().Fire(curVolume* preStress);
                     //Debug.Log("fire power: "+ curVolume * preStress +" c&p" +curVolume+":"+preStress);
                     readyToFire = false;
@@ -124,7 +129,8 @@ public class cageCtrl : MonoBehaviour {
         curMaxVolume = curGroundXSpace * curGroundZSpace;
 
         stressLevel = curVolume / curMaxVolume;
-        Debug.Log(stressLevel);
+        stressLevel = Mathf.Min(stressLevel, 1.45f);
+        //Debug.Log(stressLevel);
         curStress = (stressLevel >= 0.8f) ? startStress * (1 + Mathf.Min(stressLevel - 0.8f, 1f) * 8) : startStress;
 
         if (!readyToFire && (stressLevel > 1.2f))
@@ -184,19 +190,19 @@ public class cageCtrl : MonoBehaviour {
             wallLeftPos.z = Mathf.Min(wallLeftPos.z + (pushPower * curStress) * Time.deltaTime, wallLeftStartPos.z);
     }
 
-    public void UpdateGroundSize()
-    {
-        //...
+    //public void UpdateGroundSize()
+    //{
+    //    //...
 
-        wallUpPos = wallUp.localPosition;
-        wallDownPos = wallDown.localPosition;
-        wallRightPos = wallRight.localPosition;
-        wallLeftPos = wallLeft.localPosition;
-        wallUpStartPos = wallUp.localPosition;
-        wallDownStartPos = wallDown.localPosition;
-        wallRightStartPos = wallRight.localPosition;
-        wallLeftStartPos = wallLeft.localPosition;
-    }
+    //    wallUpPos = wallUp.localPosition;
+    //    wallDownPos = wallDown.localPosition;
+    //    wallRightPos = wallRight.localPosition;
+    //    wallLeftPos = wallLeft.localPosition;
+    //    wallUpStartPos = wallUp.localPosition;
+    //    wallDownStartPos = wallDown.localPosition;
+    //    wallRightStartPos = wallRight.localPosition;
+    //    wallLeftStartPos = wallLeft.localPosition;
+    //}
 
     public void ScaleGroundSize(float scaleValue)
     {
@@ -250,6 +256,16 @@ public class cageCtrl : MonoBehaviour {
         curWallLength = curGroundSize / 2 - curWallThick;
     }
 
+    public void EnableThinSpawn()
+    {
+        ableToAddThin = true;
+    }
+
+    public void EnableFuelTankSpawn()
+    {
+        ableToAddFuelTank = true;
+    }
+
     public static void SetUpTarget(Transform shooter)
     {
         targetPos = shooter.position;
@@ -274,8 +290,22 @@ public class cageCtrl : MonoBehaviour {
         spawnPos.x = wallRight.localPosition.x - 1f - Random.Range(0f, curGroundXSpace - 1f);
         spawnPos.z = wallUp.localPosition.z - 1f - Random.Range(0f, curGroundZSpace - 1f);
         spawnPt.localPosition = spawnPos;
+        Transform human;
 
-        Transform human = Instantiate(normalHuamn, spawnPos, Quaternion.identity);
+        float randomNum = Random.Range(0f, 1f);
+        if (ableToAddThin && randomNum < 0.2f)
+        {
+            human = Instantiate(thinHuman, spawnPos, Quaternion.identity);
+        }
+        else if (ableToAddFuelTank && randomNum < 0.35f)
+        {
+            human = Instantiate(fuelTankHuman, spawnPos, Quaternion.identity);
+        }
+        else
+        {
+            human = Instantiate(normalHuamn, spawnPos, Quaternion.identity);
+        }
+
         human.GetComponent<humanCtrl>().InitMat(skin[Random.Range(0, skinCount)],
                                                 clothing[Random.Range(0, clothingCount)],
                                                 clothing[Random.Range(0, clothingCount)],
