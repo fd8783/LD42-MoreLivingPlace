@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TMPro;
 
 public class shooterCtrl : MonoBehaviour {
 
@@ -17,12 +18,34 @@ public class shooterCtrl : MonoBehaviour {
 
     private ParticleSystem landingParticle;
 
+    private cageCtrl cageScript;
+
+    private AudioSource audio;
+
+    private TextMeshProUGUI talk;
+
+    private string[] talkText = {"I can do this all DAY !!",
+                                "It's a TRAP !!",
+                                "I am the chosen one !",
+                                "WHY AM I HERE ARRRRRRR",
+                                "I believe I can flyyyy",
+                                "DREAM CUM TRUEEEE",
+                                "Finally",
+                                "I am saving this world!",
+                                "it's crowded!",
+                                "Am I going to fly?",
+                                "WOOOO HOOOOOOO",
+    };
+
     // Use this for initialization
     void Awake () {
         fallingSpeed *= Time.deltaTime;
         curFallingSpeed *= Time.deltaTime;
         landingParticle = transform.Find("landingParticle").GetComponent<ParticleSystem>();
         destroyParticlePos = transform.Find("destroyParticlePos");
+        cageScript = GameObject.Find("Cage").GetComponent<cageCtrl>();
+        audio = GetComponent<AudioSource>();
+        talk = transform.Find("Talk/content").GetComponent<TextMeshProUGUI>();
     }
 
     // Update is called once per frame
@@ -60,11 +83,13 @@ public class shooterCtrl : MonoBehaviour {
         reachTarget = true;
         landingParticle.Play();
         Smash();
-        cageCtrl.Register(volume*transform.localScale.x);
+        cageScript.Register(volume*transform.localScale.x);
         //Debug.Log("pushing");
+        audio.Play();
         if (loaded)
         {
-            cageCtrl.SetUpTarget(transform);
+            cageScript.SetUpTarget(transform);
+            StartCoroutine("startTalking", Random.Range(2.5f,3f));
         }
         else
         {
@@ -84,14 +109,20 @@ public class shooterCtrl : MonoBehaviour {
             float closestDis = float.MaxValue, curDis, closetIndex = -1;
             for (int i = 0; i < smashTargets.Length; i++)
             {
-                if (smashTargets[i].tag == "FuelTankHuman")
+                if (smashTargets[i].CompareTag("FuelTankHuman"))
                 {
                     fuelIndexs.Add(i);
                 }
                 else
                 {
                     normalCount++;
-                    curDis = Vector3.Distance(transform.position, smashTargets[i].transform.position);
+                    Vector3 humanPos = smashTargets[i].transform.position;
+                    if (smashTargets[i].CompareTag("ThinHuman"))
+                    {
+                        humanPos.y *= 0.2f;
+                    }
+                    curDis = Vector3.Distance(transform.position, humanPos);
+                    //Debug.Log("tag: " + smashTargets[i].tag + " dis: " + curDis +"\n"+transform.position +"  "+smashTargets[i].transform.position);
                     if (curDis < closestDis)
                     {
                         closetIndex = i;
@@ -145,6 +176,13 @@ public class shooterCtrl : MonoBehaviour {
         }
     }
 
+    IEnumerator startTalking(float time)
+    {
+        talk.text = talkText[Random.Range(0, talkText.Length)];
+        yield return new WaitForSeconds(time);
+        talk.text = "";
+    }
+
     public void Fire(float power)
     {
         screenShake.ShakeScreen(1f);
@@ -163,7 +201,8 @@ public class shooterCtrl : MonoBehaviour {
 
     public void SelfDestroy()
     {
-        cageCtrl.Dismiss(volume);
+        audio.Play();
+        cageScript.Dismiss(volume);
         Instantiate(destroyParticle, destroyParticlePos.position, destroyParticlePos.rotation);
         Collider[] smashTargets = Physics.OverlapSphere(transform.position, transform.localScale.x * smashRange, smashTargetLayer);
         foreach (Collider col in smashTargets)

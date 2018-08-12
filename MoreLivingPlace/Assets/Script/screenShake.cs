@@ -58,10 +58,10 @@ public class screenShake : MonoBehaviour {
         shakepos = Random.insideUnitSphere.normalized * Random.Range(0.8f, 1f) * shakecoefficient;
         //Debug.Log(shakepos.ToString("f4"));
         //shakepos.z = -10f; // z from camstartpos
-        Debug.Log("shake " + maincamera.position);
+        //Debug.Log("shake " + maincamera.position);
         maincamera.position = camstartpos + shakepos;
         isshaked = true;
-        Debug.Log("shake "+ maincamera.position);
+        //Debug.Log("shake "+ maincamera.position);
     }
 
     static public void StopScreen(float time)

@@ -25,14 +25,20 @@ public class humanCtrl : MonoBehaviour {
 
     private Transform model, armCtrl;
 
+    private cageCtrl cageScript;
+
+    private AudioSource[] audio;
+
     // Use this for initialization
     public void Awake () {
         model = transform.Find("model");
         armCtrl = model.Find("armCtrl");
         bodyRb = GetComponent<Rigidbody>();
-        cageCtrl.Register(volume);
+        cageScript = GameObject.Find("Cage").GetComponent<cageCtrl>();
+        cageScript.Register(volume);
         nextMoveTime = Time.time + Random.Range(minMoveInterval, maxMoveInterval);
         bloodParticlePos = transform.Find("bloodParticlePos");
+        audio = GetComponents<AudioSource>();
     }
 	
 	// Update is called once per frame
@@ -46,7 +52,7 @@ public class humanCtrl : MonoBehaviour {
         }
         else
         {
-            Panicing((cageCtrl.stressLevel > 1.1f));
+            Panicing((cageScript.stressLevel > 1.1f));
             if (Time.time > nextMoveTime)
             {
                 GroundCheck();
@@ -107,7 +113,7 @@ public class humanCtrl : MonoBehaviour {
         //loadedPos.y += height;
         transform.position = loadedPos;
         transform.parent = shooter;
-        cageCtrl.Dismiss(volume);
+        cageScript.Dismiss(volume);
     }
 
     void Fly()
@@ -117,7 +123,7 @@ public class humanCtrl : MonoBehaviour {
         bodyRb.velocity = flySpeed;
         if (bodyRb.velocity.y < 0)
         {
-            if (transform.position.y - curFallSpeed * Time.deltaTime <= 0.5f) //0.5 is hardcode ground height
+            if (transform.position.y - curFallSpeed * Time.deltaTime <= 0.6f) //0.5 is hardcode ground height
             {
                 Vector3 curPos = transform.position;
                 curPos.y = 0.5f;
@@ -145,11 +151,20 @@ public class humanCtrl : MonoBehaviour {
         {
             //Debug.Log(Mathf.Max(Mathf.RoundToInt(transform.position.y - height), 0));
             BackgroundSetting.SetCurHeight(Mathf.Max(Mathf.RoundToInt(transform.position.y - height), 0));
+            if (!BackgroundSetting.gameEnded && BackgroundSetting.highestHeight > BackgroundSetting.stepStoneTarget[4])
+            {
+                BackgroundSetting.EndTheGame(gameObject);
+                gameObject.name = "arrivedHuman";
+                DontDestroyOnLoad(this);
+                isLoaded = false;
+                bodyRb.isKinematic = true;
+            }
         }
     }
 
     public void Fire(float power)
     {
+        audio[0].Play();
         fired = true;
         flySpeed = Vector3.zero;
         flySpeed.y = power;
@@ -162,8 +177,18 @@ public class humanCtrl : MonoBehaviour {
 
     public void Death()
     {
+        audio[1].Play();
         isDeath = true;
-        cageCtrl.Dismiss(volume);
+        cageScript.Dismiss(volume);
+        //instant blood particle
+        Instantiate(bloodParticle, bloodParticlePos.position, bloodParticlePos.rotation);
+        Destroy(gameObject);
+    }
+
+    public void DeathWithoutDismiss()
+    {
+        audio[1].Play();
+        isDeath = true;
         //instant blood particle
         Instantiate(bloodParticle, bloodParticlePos.position, bloodParticlePos.rotation);
         Destroy(gameObject);

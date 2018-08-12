@@ -37,9 +37,9 @@ public class fuelTankHuman : humanCtrl {
 
     override public void InitMat(Material skin, Material clothing, Material pant, Material shoe)
     {
-        InitMat(skin, clothing, pant, shoe);
+        base.InitMat(skin, clothing, pant, shoe);
         transform.Find("model/head/hatBase").GetComponent<Renderer>().material = shoe;
-        transform.Find("model/head/hatTop").GetComponent<Renderer>().material = shoe;
+        transform.Find("model/head/hatTop/hatTop").GetComponent<Renderer>().material = shoe;
     }
 
 }

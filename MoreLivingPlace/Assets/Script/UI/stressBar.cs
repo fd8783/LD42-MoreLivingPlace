@@ -12,17 +12,19 @@ public class stressBar : MonoBehaviour {
     private Vector3 curIndicatorPos;
     private float curShowingStressLevel;
 
-	// Use this for initialization
-	void Awake () {
+    private cageCtrl cageScript;
+    // Use this for initialization
+    void Awake () {
         barImg = transform.Find("bar").GetComponent<Image>();
         caseImg = transform.Find("case").GetComponent<Image>();
         indicator = transform.Find("indicator").GetComponent<RectTransform>();
+        cageScript = GameObject.Find("Cage").GetComponent<cageCtrl>();
         indicatorMovingRange = maxIndicatorMoving - minIndicatorMoving;
     }
 	
 	// Update is called once per frame
 	void Update () {
-        curShowingStressLevel = Mathf.Min(cageCtrl.stressLevel / 1.45f, 1f);
+        curShowingStressLevel = Mathf.Min(cageScript.stressLevel / 1.6f, 1f);
         barImg.fillAmount = curShowingStressLevel;
         curIndicatorPos = indicator.anchoredPosition;
         curIndicatorPos.y = minIndicatorMoving + (curShowingStressLevel * indicatorMovingRange);

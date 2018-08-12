@@ -3,13 +3,13 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class cageCtrl : MonoBehaviour {
-    private static int curHumanCount = 0;
-    public static float curMaxVolume, curVolume = 0, stressLevel;
-    public static bool ableToSpawn = true;
-    public static bool readyToPush = false;
+    private int curHumanCount = 0;
+    public float curMaxVolume, curVolume = 0, stressLevel;
+    public bool ableToSpawn = true;
+    public bool readyToPush = false;
     public bool ableToAddThin = false, ableToAddFuelTank = false;
-    private static Vector3 targetPos;
-    private static Transform curShooter = null;
+    private Vector3 targetPos;
+    private Transform curShooter = null;
 
     public float preStress = 0, lastPushTime, releaseFireTime = 0.2f;
     private bool readyToFire = false, pushedThisFrame =false;
@@ -59,7 +59,7 @@ public class cageCtrl : MonoBehaviour {
         curGroundSize = (int)ground.transform.localScale.x;
         curWallLength = curGroundSize/2 - curWallThick;
         //SetUpTarget(new Vector3(0,0,0));
-        mouseScript = GameObject.Find("MouseCtrl").GetComponent<mouseCtrl>();
+        //mouseScript = GameObject.Find("MouseCtrl").GetComponent<mouseCtrl>();
         normalHuamn = Resources.Load<Transform>("Human/NormalHuman");
         thinHuman = Resources.Load<Transform>("Human/ThinHuman");
         fuelTankHuman = Resources.Load<Transform>("Human/FuelTankHuman");
@@ -69,6 +69,8 @@ public class cageCtrl : MonoBehaviour {
         spawnPos.y = wallUp.localPosition.y + 3f;
         //humanSpawnScript = GetComponent<humanSpawning>();
         StartCoroutine("humanSpawningLoop");
+        BackgroundSetting.curStep = 0;
+        BackgroundSetting.CheckStep();
     }
 	
 	// Update is called once per frame
@@ -129,7 +131,7 @@ public class cageCtrl : MonoBehaviour {
         curMaxVolume = curGroundXSpace * curGroundZSpace;
 
         stressLevel = curVolume / curMaxVolume;
-        stressLevel = Mathf.Min(stressLevel, 1.45f);
+        stressLevel = Mathf.Min(stressLevel, 1.6f);
         //Debug.Log(stressLevel);
         curStress = (stressLevel >= 0.8f) ? startStress * (1 + Mathf.Min(stressLevel - 0.8f, 1f) * 8) : startStress;
 
@@ -266,20 +268,20 @@ public class cageCtrl : MonoBehaviour {
         ableToAddFuelTank = true;
     }
 
-    public static void SetUpTarget(Transform shooter)
+    public void SetUpTarget(Transform shooter)
     {
         targetPos = shooter.position;
         curShooter = shooter;
         readyToPush = true;
     }
 
-    public static void Register(float volume)
+    public void Register(float volume)
     {
         curVolume += volume;
         curHumanCount++;
     }
 
-    public static void Dismiss(float volume)
+    public void Dismiss(float volume)
     {
         curVolume -= volume;
         curHumanCount--;

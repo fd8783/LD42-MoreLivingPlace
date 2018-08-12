@@ -32,7 +32,7 @@ public class followAst : MonoBehaviour {
         //        targetPos.y = lowestY;
         //}
         //MoveCamera();
-        cam.orthographicSize = startSize + Mathf.Log(BackgroundSetting.curHeight+1) * 2;
+        cam.orthographicSize = 10f + Mathf.Log(BackgroundSetting.curHeight+1) * 2;
 	}
 
     //void MoveCamera()

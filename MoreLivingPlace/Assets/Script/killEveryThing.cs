@@ -16,7 +16,8 @@ public class killEveryThing : MonoBehaviour {
         //Debug.Log(other.gameObject.layer +" f "+ playerLayerNum);
         if (other.gameObject.layer == playerLayerNum)
         {
-            other.GetComponent<humanCtrl>().Death();
+            if (other.GetComponent<humanCtrl>() != null)
+                other.GetComponent<humanCtrl>().Death();
         }
         else
         {

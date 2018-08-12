@@ -1,12 +1,16 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class BackgroundSetting : MonoBehaviour
 {
     public static BackgroundSetting Instance;
+    public static GameObject human;
 
-    public static int curHeight= 0, highestHeight = 0;
+    public static bool gameEnded = false;
+
+    public static int curHeight = 0, highestHeight = 0;
     public static float fuelTankPower = 1.2f;
 
     //StepStone
@@ -15,11 +19,11 @@ public class BackgroundSetting : MonoBehaviour
     //3. addin FuelTankHuman
     //4. scale up Ground
     public static int curStep = 0;
-    public static int[] stepStoneTarget = { 80, 200, 10000, 11000, int.MaxValue};
+    public static int[] stepStoneTarget = { 80, 200, 1000, 5000, 11000, int.MaxValue };
 
 
     // Use this for initialization
-    void Awake ()
+    void Awake()
     {
         if (Instance == null)
         {
@@ -32,11 +36,18 @@ public class BackgroundSetting : MonoBehaviour
             Destroy(gameObject);
         }
         DontDestroyOnLoad(this);
-	}
-	
-	// Update is called once per frame
-	void Update ()
+    }
+
+    //private void Start()
+    //{
+    //    if (SceneManager.GetActiveScene().buildIndex == 0 && gameEnded)
+    //        GameObject.Find("Main Camera").GetComponent<MenuCtrl>().Switch(gameEnded);
+    //}
+
+    // Update is called once per frame
+    void Update()
     {
+
     }
 
     public static void CheckStep()
@@ -47,21 +58,39 @@ public class BackgroundSetting : MonoBehaviour
             {
                 case 0:
                     GameObject.Find("Cage").GetComponent<cageCtrl>().EnableThinSpawn();
+                    if (!gameEnded)
+                        GameObject.Find("ScreenUI").GetComponent<TipsCtrl>().ShowTips(0);
                     break;
                 case 1:
                     GameObject.Find("Cage").GetComponent<cageCtrl>().ScaleGroundSize(1.5f);
+                    if (!gameEnded)
+                        GameObject.Find("ScreenUI").GetComponent<TipsCtrl>().ShowTips(1);
                     break;
                 case 2:
                     GameObject.Find("Cage").GetComponent<cageCtrl>().EnableFuelTankSpawn();
+                    if (!gameEnded)
+                        GameObject.Find("ScreenUI").GetComponent<TipsCtrl>().ShowTips(2);
                     break;
                 case 3:
                     GameObject.Find("Cage").GetComponent<cageCtrl>().ScaleGroundSize(1.5f);
+                    if (!gameEnded)
+                        GameObject.Find("ScreenUI").GetComponent<TipsCtrl>().ShowTips(3);
+                    break;
+                case 4:
+                    //end
                     break;
                 default:
                     break;
             }
             curStep++;
         }
+    }
+
+    public static void EndTheGame(GameObject arrievdHuman)
+    {
+        human = arrievdHuman;
+        gameEnded = true;
+        SceneManager.LoadScene(2);
     }
 
     public static void SetCurHeight(int height)
@@ -71,5 +100,10 @@ public class BackgroundSetting : MonoBehaviour
         {
             highestHeight = curHeight;
         }
+    }
+
+    public static void SwitchScene(int sceneNum)
+    {
+        SceneManager.LoadScene(sceneNum);
     }
 }

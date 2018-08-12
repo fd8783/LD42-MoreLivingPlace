@@ -15,7 +15,7 @@ public class heightRecord : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-        curHeightText.text = "Height: " + BackgroundSetting.curHeight + "m";
+        curHeightText.text = "Height: " + BackgroundSetting.curHeight +"/ "+BackgroundSetting.stepStoneTarget[BackgroundSetting.curStep]+ "m";
         highestHeightText.text = "(Highest: " + BackgroundSetting.highestHeight + "m)";
     }
 }
