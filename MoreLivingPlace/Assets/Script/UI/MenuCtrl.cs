@@ -29,7 +29,15 @@ public class MenuCtrl : MonoBehaviour {
 
     public void StartBut()
     {
-        SceneManager.LoadScene(1);
+        if (BackgroundSetting.isFirstTime)
+        {
+            SceneManager.LoadScene(1);
+            BackgroundSetting.isFirstTime = false;
+        }
+        else
+        {
+            SceneManager.LoadScene(2);
+        }
     }
 
     public void ExitBut()

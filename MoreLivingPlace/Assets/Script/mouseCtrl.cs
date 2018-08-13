@@ -11,7 +11,7 @@ public class mouseCtrl : MonoBehaviour {
     private cageCtrl cageScript;
     private Transform shooterPool;
     private Transform shooter, lastShooter;
-
+    
     private bool readyToFire = true;
     
 	// Use this for initialization
@@ -26,7 +26,7 @@ public class mouseCtrl : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-        if (readyToFire)
+        if (readyToFire && cageScript.isWallRecovered) 
         {
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             RaycastHit hit;
@@ -48,6 +48,7 @@ public class mouseCtrl : MonoBehaviour {
                             lastShooter = null;
                         }
                         Transform shooterInstant = Instantiate(shooter, new Vector3(hit.point.x, hit.point.y + 100f, hit.point.z), Quaternion.identity);
+                        lastShooter = shooterInstant;
                         shooterInstant.GetComponent<shooterCtrl>().SetUpTargetPos(hit.point);
                         readyToFire = false;
                     }
@@ -64,18 +65,16 @@ public class mouseCtrl : MonoBehaviour {
 
     public void RestartAimming(Transform lastShooter)//missed
     {
-        this.lastShooter = lastShooter;
         readyToFire = true;
     }
 
-    //public void Fired()
-    //{
-    //    readyToFire = false;
-    //}
+    public void Fired()
+    {
+        readyToFire = false;
+    }
 
     public void RestartAimming()//not missed
     {
-        lastShooter = null;
         readyToFire = true;
     }
 }

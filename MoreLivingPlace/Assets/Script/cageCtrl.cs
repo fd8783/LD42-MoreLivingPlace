@@ -37,6 +37,10 @@ public class cageCtrl : MonoBehaviour {
     //private humanSpawning humanSpawnScript;
     public float humanSpawnInterval = 0.3f;
 
+    private AudioSource audioS;
+
+    public bool isWallRecovered = true;
+
 	// Use this for initialization
 	void Awake () {
         ground = transform.Find("ground");
@@ -59,7 +63,7 @@ public class cageCtrl : MonoBehaviour {
         curGroundSize = (int)ground.transform.localScale.x;
         curWallLength = curGroundSize/2 - curWallThick;
         //SetUpTarget(new Vector3(0,0,0));
-        //mouseScript = GameObject.Find("MouseCtrl").GetComponent<mouseCtrl>();
+        mouseScript = GameObject.Find("MouseCtrl").GetComponent<mouseCtrl>();
         normalHuamn = Resources.Load<Transform>("Human/NormalHuman");
         thinHuman = Resources.Load<Transform>("Human/ThinHuman");
         fuelTankHuman = Resources.Load<Transform>("Human/FuelTankHuman");
@@ -71,6 +75,7 @@ public class cageCtrl : MonoBehaviour {
         StartCoroutine("humanSpawningLoop");
         BackgroundSetting.curStep = 0;
         BackgroundSetting.CheckStep();
+        audioS = GetComponent<AudioSource>();
     }
 	
 	// Update is called once per frame
@@ -80,6 +85,7 @@ public class cageCtrl : MonoBehaviour {
         {
             if (Input.GetKeyDown(KeyCode.Space))
             {
+                audioS.Play();
                 Pushing();
                 pushedThisFrame = true;
                 lastPushTime = Time.time;
@@ -88,7 +94,7 @@ public class cageCtrl : MonoBehaviour {
             {
                 if (Time.time > lastPushTime + releaseFireTime)
                 {
-                    //mouseScript.Fired();
+                    mouseScript.Fired();
                     Debug.Log("fire power: " + Mathf.Pow(curVolume, preStress * 0.9f) + " c&p" + curVolume + ":" + preStress * 0.9f);
                     curShooter.GetComponent<shooterCtrl>().Fire(Mathf.Pow(curVolume, preStress*0.9f));
                     screenShake.shakecoefficient = 1f * preStress;
@@ -171,25 +177,44 @@ public class cageCtrl : MonoBehaviour {
 
     public void PushingBack()
     {
+        int backCount = 0;
         if (wallUpPos.x < wallUpStartPos.x)
             wallUpPos.x = Mathf.Min(wallUpPos.x + (pushPower * curStress) * Time.deltaTime, wallUpStartPos.x);
+        else
+            backCount++;
         if (wallUpPos.z < wallUpStartPos.z)
             wallUpPos.z = Mathf.Min(wallUpPos.z + (pushPower * curStress) * Time.deltaTime, wallUpStartPos.z);
+        else
+            backCount++;
 
         if (wallDownPos.x > wallDownStartPos.x)
             wallDownPos.x = Mathf.Max(wallDownPos.x - (pushPower * curStress) * Time.deltaTime, wallDownStartPos.x);
+        else
+            backCount++;
         if (wallDownPos.z > wallDownStartPos.z)
             wallDownPos.z = Mathf.Max(wallDownPos.z - (pushPower * curStress) * Time.deltaTime, wallDownStartPos.z);
+        else
+            backCount++;
 
         if (wallRightPos.x < wallRightStartPos.x)
             wallRightPos.x = Mathf.Min(wallRightPos.x + (pushPower * curStress) * Time.deltaTime, wallRightStartPos.x);
+        else
+            backCount++;
         if (wallRightPos.z > wallRightStartPos.z)
             wallRightPos.z = Mathf.Max(wallRightPos.z - (pushPower * curStress) * Time.deltaTime, wallRightStartPos.z);
+        else
+            backCount++;
 
         if (wallLeftPos.x > wallLeftStartPos.x)
             wallLeftPos.x = Mathf.Max(wallLeftPos.x - (pushPower * curStress) * Time.deltaTime, wallLeftStartPos.x);
+        else
+            backCount++;
         if (wallLeftPos.z < wallLeftStartPos.z)
             wallLeftPos.z = Mathf.Min(wallLeftPos.z + (pushPower * curStress) * Time.deltaTime, wallLeftStartPos.z);
+        else
+            backCount++;
+
+        isWallRecovered = (backCount == 8);
     }
 
     //public void UpdateGroundSize()

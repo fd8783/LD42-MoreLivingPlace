@@ -8,10 +8,13 @@ public class BackgroundSetting : MonoBehaviour
     public static BackgroundSetting Instance;
     public static GameObject human;
 
+    public static bool isFirstTime = true;
     public static bool gameEnded = false;
 
     public static int curHeight = 0, highestHeight = 0;
     public static float fuelTankPower = 1.2f;
+
+    private AudioSource grab;
 
     //StepStone
     //1. addin Thin Human 80m
@@ -19,7 +22,7 @@ public class BackgroundSetting : MonoBehaviour
     //3. addin FuelTankHuman
     //4. scale up Ground
     public static int curStep = 0;
-    public static int[] stepStoneTarget = { 80, 200, 1000, 5000, 11000, int.MaxValue };
+    public static int[] stepStoneTarget = { 80, 200, 1000, 3000, 11000, int.MaxValue };
 
 
     // Use this for initialization
@@ -36,6 +39,7 @@ public class BackgroundSetting : MonoBehaviour
             Destroy(gameObject);
         }
         DontDestroyOnLoad(this);
+        grab = GetComponent<AudioSource>();
     }
 
     //private void Start()
@@ -47,7 +51,8 @@ public class BackgroundSetting : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-
+        if (Input.GetMouseButtonDown(0))
+            grab.Play();
     }
 
     public static void CheckStep()
@@ -90,7 +95,7 @@ public class BackgroundSetting : MonoBehaviour
     {
         human = arrievdHuman;
         gameEnded = true;
-        SceneManager.LoadScene(2);
+        SceneManager.LoadScene(3);
     }
 
     public static void SetCurHeight(int height)

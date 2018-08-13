@@ -20,7 +20,7 @@ public class shooterCtrl : MonoBehaviour {
 
     private cageCtrl cageScript;
 
-    private AudioSource audio;
+    private AudioSource audioS;
 
     private TextMeshProUGUI talk;
 
@@ -44,7 +44,7 @@ public class shooterCtrl : MonoBehaviour {
         landingParticle = transform.Find("landingParticle").GetComponent<ParticleSystem>();
         destroyParticlePos = transform.Find("destroyParticlePos");
         cageScript = GameObject.Find("Cage").GetComponent<cageCtrl>();
-        audio = GetComponent<AudioSource>();
+        audioS = GetComponent<AudioSource>();
         talk = transform.Find("Talk/content").GetComponent<TextMeshProUGUI>();
     }
 
@@ -85,16 +85,13 @@ public class shooterCtrl : MonoBehaviour {
         Smash();
         cageScript.Register(volume*transform.localScale.x);
         //Debug.Log("pushing");
-        audio.Play();
+        audioS.Play();
         if (loaded)
         {
             cageScript.SetUpTarget(transform);
             StartCoroutine("startTalking", Random.Range(2.5f,3f));
         }
-        else
-        {
-            GameObject.Find("MouseCtrl").GetComponent<mouseCtrl>().RestartAimming(transform);
-        }
+        GameObject.Find("MouseCtrl").GetComponent<mouseCtrl>().RestartAimming();
     }
 
     void Smash()
@@ -201,7 +198,7 @@ public class shooterCtrl : MonoBehaviour {
 
     public void SelfDestroy()
     {
-        audio.Play();
+        audioS.Play();
         cageScript.Dismiss(volume);
         Instantiate(destroyParticle, destroyParticlePos.position, destroyParticlePos.rotation);
         Collider[] smashTargets = Physics.OverlapSphere(transform.position, transform.localScale.x * smashRange, smashTargetLayer);

@@ -9,6 +9,9 @@ EditorBuildSettings:
     path: Assets/Scenes/Opening.unity
     guid: c06f16a29f2d02742bf9db2722a7bf53
   - enabled: 1
+    path: Assets/Scenes/fakeOp.unity
+    guid: 02061ed6a99c5bc45801b99843059cf4
+  - enabled: 1
     path: Assets/Scenes/Level.unity
     guid: 99c9720ab356a0642a771bea13969a05
   - enabled: 1
