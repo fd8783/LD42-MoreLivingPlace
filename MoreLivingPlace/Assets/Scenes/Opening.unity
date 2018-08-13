@@ -1203,7 +1203,7 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 553367927}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -1.04, y: 4.46, z: 0}
+  m_LocalPosition: {x: -0.6, y: 4.18, z: 0}
   m_LocalScale: {x: 1.5, y: 1.5, z: 1.5}
   m_Children:
   - {fileID: 1231830810}
@@ -1847,7 +1847,7 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 868573088}
   m_LocalRotation: {x: -0, y: -0, z: 0.12470958, w: 0.9921933}
-  m_LocalPosition: {x: 0.29, y: 4.42, z: 0}
+  m_LocalPosition: {x: 0.7299999, y: 4.14, z: 0}
   m_LocalScale: {x: 1.4, y: 1.4, z: 1.4}
   m_Children:
   - {fileID: 1923650807}
@@ -4418,8 +4418,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 5.8960004}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -61.6, y: 112.3}
-  m_SizeDelta: {x: 500, y: 200}
+  m_AnchoredPosition: {x: -118, y: 106}
+  m_SizeDelta: {x: 476, y: 258}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1933236210
 MonoBehaviour:
@@ -4440,7 +4440,7 @@ MonoBehaviour:
       m_Calls: []
     m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
-  m_Sprite: {fileID: 21300000, guid: ae55ae091efda324787a506c35f49bf3, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 61fee508cb975b14e961b82f55e8f5b9, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
