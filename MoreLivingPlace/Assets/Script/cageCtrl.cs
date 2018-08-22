@@ -324,7 +324,7 @@ public class cageCtrl : MonoBehaviour {
         {
             human = Instantiate(thinHuman, spawnPos, Quaternion.identity);
         }
-        else if (ableToAddFuelTank && randomNum < 0.35f)
+        else if (ableToAddFuelTank && randomNum < 0.45f)
         {
             human = Instantiate(fuelTankHuman, spawnPos, Quaternion.identity);
         }

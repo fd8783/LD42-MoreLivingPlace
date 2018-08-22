@@ -9,6 +9,7 @@ public class BackgroundSetting : MonoBehaviour
     public static GameObject human;
 
     public static bool isFirstTime = true;
+    public static bool[] firstTips = { true, true, true, true };
     public static bool gameEnded = false;
 
     public static int curHeight = 0, highestHeight = 0;
@@ -22,7 +23,7 @@ public class BackgroundSetting : MonoBehaviour
     //3. addin FuelTankHuman
     //4. scale up Ground
     public static int curStep = 0;
-    public static int[] stepStoneTarget = { 80, 200, 1000, 3000, 11000, int.MaxValue };
+    public static int[] stepStoneTarget = { 80, 160, 800, 3000, 11000, int.MaxValue };
 
 
     // Use this for initialization
@@ -53,6 +54,8 @@ public class BackgroundSetting : MonoBehaviour
     {
         if (Input.GetMouseButtonDown(0))
             grab.Play();
+        if (Input.GetKeyDown(KeyCode.Escape) && SceneManager.GetActiveScene().buildIndex != 0)
+            SceneManager.LoadScene(0);
     }
 
     public static void CheckStep()
@@ -63,23 +66,35 @@ public class BackgroundSetting : MonoBehaviour
             {
                 case 0:
                     GameObject.Find("Cage").GetComponent<cageCtrl>().EnableThinSpawn();
-                    if (!gameEnded)
+                    if (firstTips[0])
+                    {
                         GameObject.Find("ScreenUI").GetComponent<TipsCtrl>().ShowTips(0);
+                        firstTips[0] = false;
+                    }
                     break;
                 case 1:
                     GameObject.Find("Cage").GetComponent<cageCtrl>().ScaleGroundSize(1.5f);
-                    if (!gameEnded)
+                    if (firstTips[1])
+                    {
                         GameObject.Find("ScreenUI").GetComponent<TipsCtrl>().ShowTips(1);
+                        firstTips[1] = false;
+                    }
                     break;
                 case 2:
                     GameObject.Find("Cage").GetComponent<cageCtrl>().EnableFuelTankSpawn();
-                    if (!gameEnded)
+                    if (firstTips[2])
+                    {
                         GameObject.Find("ScreenUI").GetComponent<TipsCtrl>().ShowTips(2);
+                        firstTips[2] = false;
+                    }
                     break;
                 case 3:
                     GameObject.Find("Cage").GetComponent<cageCtrl>().ScaleGroundSize(1.5f);
-                    if (!gameEnded)
+                    if (firstTips[3])
+                    {
                         GameObject.Find("ScreenUI").GetComponent<TipsCtrl>().ShowTips(3);
+                        firstTips[3] = false;
+                    }
                     break;
                 case 4:
                     //end
@@ -111,4 +126,6 @@ public class BackgroundSetting : MonoBehaviour
     {
         SceneManager.LoadScene(sceneNum);
     }
+
+
 }

@@ -1279,7 +1279,7 @@ MonoBehaviour:
   minMoveInterval: 1
   maxMoveInterval: 2
   curFallSpeed: 0
-  fallSpeed: 0.008
+  fallSpeed: 0.0075
 --- !u!119 &119191012022811852
 Projector:
   m_ObjectHideFlags: 1

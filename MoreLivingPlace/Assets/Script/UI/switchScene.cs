@@ -8,4 +8,14 @@ public class switchScene : MonoBehaviour {
     {
         BackgroundSetting.SwitchScene(num);
     }
+
+    public void dismissTUT(GameObject dismiss)
+    {
+        dismiss.SetActive(false);
+    }
+
+    public void showTUT(GameObject show)
+    {
+        show.SetActive(true);
+    }
 }
